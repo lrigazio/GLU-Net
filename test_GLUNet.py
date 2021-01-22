@@ -6,6 +6,7 @@ import imageio
 from matplotlib import pyplot as plt
 from utils.pixel_wise_mapping import remap_using_flow_fields
 import cv2
+import numpy
 
 
 def pad_to_same_shape(im1, im2):
@@ -79,6 +80,7 @@ with torch.no_grad():
     warped_source_image = remap_using_flow_fields(source_image, estimated_flow.squeeze()[0].cpu().numpy(),
                                                   estimated_flow.squeeze()[1].cpu().numpy())
 
+
     fig, (axis1, axis2, axis3) = plt.subplots(1, 3, figsize=(30, 30))
     axis1.imshow(source_image)
     axis1.set_title('Source image')
@@ -89,3 +91,7 @@ with torch.no_grad():
     fig.savefig(os.path.join(args.write_dir, 'Warped_source_image.png'),
                 bbox_inches='tight')
     plt.close(fig)
+
+    # print(source_image_.shape, target_image_.shape, estimated_flow.shape)
+    flow = estimated_flow.detach().cpu().numpy().squeeze()
+    numpy.save(args.write_dir+'/flow', flow)
