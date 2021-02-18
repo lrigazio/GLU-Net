@@ -5,14 +5,14 @@ import os
 import sys
 import numpy as np
 import torch.nn.functional as F
-from models.feature_backbones.VGG_features import VGGPyramid
-from models.feature_backbones.ResNet_features import ResNetPyramid
+from .feature_backbones.VGG_features import VGGPyramid
+from .feature_backbones.ResNet_features import ResNetPyramid
 from .mod import CMDTop
-from models.our_models.mod import OpticalFlowEstimator, FeatureL2Norm, warp, \
+from .mod import OpticalFlowEstimator, FeatureL2Norm, warp, \
     CorrelationVolume, deconv, conv, predict_flow, unnormalise_and_convert_mapping_to_flow
-from models.our_models.consensus_network_modules import MutualMatching, NeighConsensus, FeatureCorrelation
-os.environ['PYTHON_EGG_CACHE'] = 'tmp/' # a writable directory 
-from models.correlation import correlation # the custom cost volume layer
+from .consensus_network_modules import MutualMatching, NeighConsensus, FeatureCorrelation
+os.environ['PYTHON_EGG_CACHE'] = 'tmp/' # a writable directory
+from .correlation import correlation # the custom cost volume layer
 
 class SemanticGLUNet_model(nn.Module):
     """

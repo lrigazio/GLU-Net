@@ -3,14 +3,14 @@ import torch.nn as nn
 from torch.autograd import Variable
 import os
 import sys
-from models.feature_backbones.VGG_features import VGGPyramid
+from .feature_backbones.VGG_features import VGGPyramid
 from .mod import CMDTop
-from models.our_models.mod import OpticalFlowEstimator, FeatureL2Norm, \
+from .mod import OpticalFlowEstimator, FeatureL2Norm, \
     CorrelationVolume, deconv, conv, predict_flow, unnormalise_and_convert_mapping_to_flow
 import torch.nn.functional as F
-os.environ['PYTHON_EGG_CACHE'] = 'tmp/' # a writable directory 
+os.environ['PYTHON_EGG_CACHE'] = 'tmp/' # a writable directory
 try:
-	from models.correlation import correlation # the custom cost volume layer
+	from .correlation import correlation # the custom cost volume layer
 except:
 	sys.path.insert(0, './correlation'); import correlation # you should consider upgrading python
 
@@ -59,7 +59,7 @@ class GLOBALNet_model(nn.Module):
         nd = nbr_features[-3]*2 # concatenating the features
         od = nd + 4
         self.decoder2 = OpticalFlowEstimator(in_channels=od, batch_norm=batch_norm)
-        self.deconv2 = deconv(2, 2, kernel_size=4, stride=2, padding=1) 
+        self.deconv2 = deconv(2, 2, kernel_size=4, stride=2, padding=1)
 
         # weights for refinement module
         self.dc_conv1 = conv(od+dd[4], 128, kernel_size=3, stride=1, padding=1,  dilation=1, batch_norm=batch_norm)
@@ -92,7 +92,7 @@ class GLOBALNet_model(nn.Module):
 
         """
         B, C, H, W = x.size()
-        # mesh grid 
+        # mesh grid
         xx = torch.arange(0, W).view(1,-1).repeat(H,1)
         yy = torch.arange(0, H).view(-1,1).repeat(1,W)
         xx = xx.view(1,1,H,W).repeat(B,1,1,1)
@@ -104,17 +104,17 @@ class GLOBALNet_model(nn.Module):
         vgrid = Variable(grid) + flo
         # makes a mapping out of the flow
 
-        # scale grid to [-1,1] 
+        # scale grid to [-1,1]
         vgrid[:,0,:,:] = 2.0*vgrid[:,0,:,:].clone() / max(W-1,1)-1.0
         vgrid[:,1,:,:] = 2.0*vgrid[:,1,:,:].clone() / max(H-1,1)-1.0
 
-        vgrid = vgrid.permute(0,2,3,1)        
+        vgrid = vgrid.permute(0,2,3,1)
         output = nn.functional.grid_sample(x, vgrid)
         mask = torch.autograd.Variable(torch.ones(x.size())).cuda()
         mask = nn.functional.grid_sample(mask, vgrid)
         mask[mask<0.9999] = 0
         mask[mask>0] = 1
-        
+
         return output*mask
 
     def forward(self, im_target, im_source, w_original=256, h_original=256):
@@ -186,6 +186,3 @@ class GLOBALNet_model(nn.Module):
             return flow2
         else:
             return [flow4, flow3, flow2]
-
-
-

@@ -4,13 +4,13 @@ import numpy as np
 from torch.autograd import Variable
 import os
 import sys
-from models.feature_backbones.VGG_features import VGGPyramid
+from .feature_backbones.VGG_features import VGGPyramid
 from .mod import CMDTop
-from models.our_models.mod import OpticalFlowEstimator, FeatureL2Norm, \
+from .mod import OpticalFlowEstimator, FeatureL2Norm, \
     CorrelationVolume, deconv, conv, predict_flow, unnormalise_and_convert_mapping_to_flow
 import torch.nn.functional as F
 os.environ['PYTHON_EGG_CACHE'] = 'tmp/' # a writable directory
-from models.correlation import correlation # the custom cost volume layer
+from .correlation import correlation # the custom cost volume layer
 
 
 class GLOCALNet_model(nn.Module):
@@ -123,7 +123,7 @@ class GLOCALNet_model(nn.Module):
 
         """
         B, C, H, W = x.size()
-        # mesh grid 
+        # mesh grid
         xx = torch.arange(0, W).view(1,-1).repeat(H,1)
         yy = torch.arange(0, H).view(-1,1).repeat(1,W)
         xx = xx.view(1,1,H,W).repeat(B,1,1,1)
@@ -135,11 +135,11 @@ class GLOCALNet_model(nn.Module):
         vgrid = Variable(grid) + flo
         # makes a mapping out of the flow
 
-        # scale grid to [-1,1] 
+        # scale grid to [-1,1]
         vgrid[:,0,:,:] = 2.0*vgrid[:,0,:,:].clone() / max(W-1,1)-1.0
         vgrid[:,1,:,:] = 2.0*vgrid[:,1,:,:].clone() / max(H-1,1)-1.0
 
-        vgrid = vgrid.permute(0,2,3,1)        
+        vgrid = vgrid.permute(0,2,3,1)
         output = nn.functional.grid_sample(x, vgrid)
         mask = torch.autograd.Variable(torch.ones(x.size())).cuda()
         mask = nn.functional.grid_sample(mask, vgrid)
@@ -248,6 +248,3 @@ class GLOCALNet_model(nn.Module):
             return flow2
         else:
             return [flow4, flow3, flow2]
-
-
-

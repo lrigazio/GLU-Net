@@ -1,16 +1,17 @@
-
 from os import path as osp
 import torch
 import torch.nn as nn
 import numpy as np
 import torch.nn.functional as F
 import math
-from models.our_models.GLUNet import GLUNet_model
-from models.our_models.Semantic_GLUNet import SemanticGLUNet_model
-from models.our_models.GLOCALNet import GLOCALNet_model
-from models.our_models.GLOBALNet import GLOBALNet_model
-from models.our_models.LOCALNet import LOCALNet_model
-from datasets.util import convert_mapping_to_flow, convert_flow_to_mapping
+
+from .our_models.GLUNet import GLUNet_model
+from .our_models.Semantic_GLUNet import SemanticGLUNet_model
+from .our_models.GLOCALNet import GLOCALNet_model
+from .our_models.GLOBALNet import GLOBALNet_model
+from .our_models.LOCALNet import LOCALNet_model
+
+from .datasets.util import convert_mapping_to_flow, convert_flow_to_mapping
 from torchvision import transforms
 
 

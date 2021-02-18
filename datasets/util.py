@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-from utils.pixel_wise_mapping import remap_using_correspondence_map
+from .utils.pixel_wise_mapping import remap_using_correspondence_map
 import torch
 
 
